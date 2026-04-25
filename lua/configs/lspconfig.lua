@@ -13,15 +13,25 @@ vim.api.nvim_create_autocmd("LspAttach", {
   end,
 })
 
--- Rust (rust_analyzer)
 vim.lsp.config("rust_analyzer", {
   capabilities = capabilities,
   settings = {
     ["rust-analyzer"] = {
       checkOnSave = true,
+      check = {
+        command = "clippy", -- use clippy instead of plain check
+      },
       procMacro = { enable = true },
-      cargo = { allFeatures = true },
-      inlayHints = { enable = true },
+      cargo = {
+        allFeatures = true,
+        loadOutDirsFromCheck = true, -- needed for some proc macros / build.rs
+      },
+      inlayHints = {
+        enable = true,
+        parameterHints = { enable = true },
+        typeHints = { enable = true },
+        chainingHints = { enable = true },
+      },
     },
   },
 })
@@ -30,14 +40,19 @@ vim.lsp.config("rust_analyzer", {
 vim.lsp.config("gopls", {
   capabilities = capabilities,
   cmd = { "gopls" },
-  filetypes = { "go", "gomod" },
+  filetypes = { "go", "gomod", "gowork", "gotmpl" },
   root_markers = { "go.work", "go.mod", ".git" },
   settings = {
     gopls = {
-      completeUnimported = true,
+      completeUnimported = true, -- suggests unimported pkgs like chi
       usePlaceholders = true,
-      analyses = { unusedparams = true },
+      analyses = {
+        unusedparams = true,
+        shadow = true,
+        unusedvariable = true,
+      },
       staticcheck = true,
+      gofumpt = true, -- stricter gofmt (optional but nice)
       hints = {
         assignVariableTypes = true,
         compositeLiteralFields = true,
@@ -71,4 +86,4 @@ vim.lsp.config("lua_ls", {
 })
 
 -- Enable all LSP servers
-vim.lsp.enable({ "html", "cssls", "rust_analyzer", "gopls", "eslint", "lua_ls" })
+vim.lsp.enable({ "html", "cssls", "gopls", "eslint", "lua_ls" })

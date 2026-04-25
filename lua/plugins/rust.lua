@@ -1,14 +1,31 @@
 return {
   {
-    "rust-lang/rust.vim",
-    ft = "rust",
-    init = function()
-      vim.g.rustfmt_autosave = 1
-    end,
-  },
-  {
     "mrcjkb/rustaceanvim",
     version = "^6",
     lazy = false,
+    init = function()
+      vim.g.rustaceanvim = {
+        server = {
+          capabilities = require("nvchad.configs.lspconfig").capabilities,
+          settings = {
+            ["rust-analyzer"] = {
+              checkOnSave = true,
+              check = { command = "clippy" },
+              procMacro = { enable = true },
+              cargo = {
+                allFeatures = true,
+                loadOutDirsFromCheck = true,
+              },
+              inlayHints = {
+                enable = true,
+                parameterHints = { enable = true },
+                typeHints = { enable = true },
+                chainingHints = { enable = true },
+              },
+            },
+          },
+        },
+      }
+    end,
   },
 }
