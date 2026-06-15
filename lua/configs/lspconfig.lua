@@ -72,6 +72,48 @@ vim.lsp.config("eslint", {
   settings = { format = { enable = true } },
 })
 
+-- JavaScript / TypeScript
+vim.lsp.config("ts_ls", {
+  capabilities = capabilities,
+  cmd = { "typescript-language-server", "--stdio" },
+  filetypes = {
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact",
+  },
+  root_markers = {
+    "tsconfig.json",
+    "jsconfig.json",
+    "package.json",
+    ".git",
+  },
+  settings = {
+    typescript = {
+      inlayHints = {
+        includeInlayParameterNameHints = "literal",
+        includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+        includeInlayFunctionParameterTypeHints = true,
+        includeInlayVariableTypeHints = false,
+        includeInlayPropertyDeclarationTypeHints = true,
+        includeInlayFunctionLikeReturnTypeHints = true,
+        includeInlayEnumMemberValueHints = true,
+      },
+    },
+    javascript = {
+      inlayHints = {
+        includeInlayParameterNameHints = "literal",
+        includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+        includeInlayFunctionParameterTypeHints = true,
+        includeInlayVariableTypeHints = false,
+        includeInlayPropertyDeclarationTypeHints = true,
+        includeInlayFunctionLikeReturnTypeHints = true,
+        includeInlayEnumMemberValueHints = true,
+      },
+    },
+  },
+})
+
 -- Lua (lua_ls)
 vim.lsp.config("lua_ls", {
   capabilities = capabilities,
@@ -86,4 +128,4 @@ vim.lsp.config("lua_ls", {
 })
 
 -- Enable all LSP servers
-vim.lsp.enable({ "html", "cssls", "gopls", "eslint", "lua_ls" })
+vim.lsp.enable({ "html", "cssls", "gopls", "eslint", "ts_ls", "lua_ls" })
