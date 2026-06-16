@@ -39,3 +39,9 @@ for i = 1, 4 do
     require("harpoon"):list():select(i)
   end, { desc = "Harpoon file " .. i })
 end
+
+-- Leetcode
+map("n", "<leader>ll", "<cmd>Leet<cr>", { desc = "Leetcode home" })
+map("n", "<leader>ld", "<cmd>Leet daily<cr>", { desc = "Leetcode daily" })
+map("n", "<leader>lr", "<cmd>Leet run<cr>", { desc = "Leetcode run" })
+map("n", "<leader>ls", "<cmd>Leet submit<cr>", { desc = "Leetcode submit" })

@@ -7,6 +7,7 @@ return {
   { import = "plugins.javascript" },
   { import = "plugins.harpoon" },
   { import = "plugins.ai" },
+  { import = "plugins.leetcode" },
 
 
   {
