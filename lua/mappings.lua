@@ -17,10 +17,10 @@ map("n", "<leader>cA", "<cmd>CursorAgentBuffer<cr>", { desc = "Send buffer" })
 -- Buffer (tabufline)
 map("n", "<leader>b", "<nop>", { desc = "buffer (disabled)" })
 map("n", "<leader>br", function()
-  require("nvchad.tabufline").closeBufs_at_direction("right")
+  require("nvchad.tabufline").closeBufs_at_direction "right"
 end, { desc = "Close buffers right" })
 map("n", "<leader>bl", function()
-  require("nvchad.tabufline").closeBufs_at_direction("left")
+  require("nvchad.tabufline").closeBufs_at_direction "left"
 end, { desc = "Close buffers left" })
 map("n", "<leader>bt", function()
   vim.o.showtabline = vim.o.showtabline == 2 and 0 or 2
@@ -31,7 +31,7 @@ map("n", "<leader>ja", function()
   require("harpoon"):list():add()
 end, { desc = "Harpoon add" })
 map("n", "<leader>mm", function()
-  local h = require("harpoon")
+  local h = require "harpoon"
   h.ui:toggle_quick_menu(h:list())
 end, { desc = "Harpoon menu" })
 for i = 1, 4 do

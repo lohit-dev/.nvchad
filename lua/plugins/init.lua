@@ -9,10 +9,9 @@ return {
   { import = "plugins.ai" },
   { import = "plugins.leetcode" },
 
-
   {
     "stevearc/conform.nvim",
-    event = 'BufWritePre', -- uncomment for format on save
+    event = "BufWritePre", -- uncomment for format on save
     opts = require "configs.conform",
   },
 
@@ -46,6 +45,7 @@ return {
     "lukas-reineke/indent-blankline.nvim",
     event = "User FilePost",
     opts = {
+      exclude = { filetypes = { "nvdash", "help", "lazy", "mason", "TelescopePrompt" } },
       indent = { char = "│", highlight = "IblChar" },
       scope = { char = "│", highlight = "IblScopeChar" },
     },
@@ -71,11 +71,10 @@ return {
     "ahmedkhalf/project.nvim",
     event = "VeryLazy",
     config = function()
-      require("project_nvim").setup({
+      require("project_nvim").setup {
         detection_methods = { "pattern" },
         patterns = { ".git", "Cargo.toml", "package.json", "go.mod" },
-      })
+      }
     end,
   },
-
 }

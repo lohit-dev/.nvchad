@@ -1,8 +1,22 @@
+if vim.g.custom_lspconfig_loaded then
+  return
+end
+vim.g.custom_lspconfig_loaded = true
+
 require("nvchad.configs.lspconfig").defaults()
 
 local capabilities = require("nvchad.configs.lspconfig").capabilities
 
--- Enable inlay hints when client supports them (LspAttach replaces on_attach)
+local function lsp_cmd(name)
+  local path = vim.fn.exepath(name)
+  if path == "" then
+    vim.notify(name .. " not found on PATH", vim.log.levels.WARN)
+    return { name }
+  end
+  return { path }
+end
+
+-- Enable inlay hints for any LSP client that supports them
 vim.api.nvim_create_autocmd("LspAttach", {
   group = vim.api.nvim_create_augroup("lsp-inlay-hints", { clear = true }),
   callback = function(args)
@@ -13,38 +27,17 @@ vim.api.nvim_create_autocmd("LspAttach", {
   end,
 })
 
-vim.lsp.config("rust_analyzer", {
-  capabilities = capabilities,
-  settings = {
-    ["rust-analyzer"] = {
-      checkOnSave = true,
-      check = {
-        command = "clippy", -- use clippy instead of plain check
-      },
-      procMacro = { enable = true },
-      cargo = {
-        allFeatures = true,
-        loadOutDirsFromCheck = true, -- needed for some proc macros / build.rs
-      },
-      inlayHints = {
-        enable = true,
-        parameterHints = { enable = true },
-        typeHints = { enable = true },
-        chainingHints = { enable = true },
-      },
-    },
-  },
-})
+-- Rust is handled by rustaceanvim (see lua/plugins/rust.lua), not vim.lsp.enable.
 
 -- Go (gopls)
 vim.lsp.config("gopls", {
   capabilities = capabilities,
-  cmd = { "gopls" },
+  cmd = lsp_cmd "gopls",
   filetypes = { "go", "gomod", "gowork", "gotmpl" },
   root_markers = { "go.work", "go.mod", ".git" },
   settings = {
     gopls = {
-      completeUnimported = true, -- suggests unimported pkgs like chi
+      completeUnimported = true,
       usePlaceholders = true,
       analyses = {
         unusedparams = true,
@@ -52,7 +45,7 @@ vim.lsp.config("gopls", {
         unusedvariable = true,
       },
       staticcheck = true,
-      gofumpt = true, -- stricter gofmt (optional but nice)
+      gofumpt = true,
       hints = {
         assignVariableTypes = true,
         compositeLiteralFields = true,
@@ -75,7 +68,7 @@ vim.lsp.config("eslint", {
 -- JavaScript / TypeScript
 vim.lsp.config("ts_ls", {
   capabilities = capabilities,
-  cmd = { "typescript-language-server", "--stdio" },
+  cmd = vim.list_extend(lsp_cmd "typescript-language-server", { "--stdio" }),
   filetypes = {
     "javascript",
     "javascriptreact",
@@ -114,18 +107,20 @@ vim.lsp.config("ts_ls", {
   },
 })
 
--- Lua (lua_ls)
+-- Lua (lua_ls) — overrides NvChad defaults with richer workspace indexing
 vim.lsp.config("lua_ls", {
   capabilities = capabilities,
-  cmd = { "/opt/homebrew/bin/lua-language-server" },
+  cmd = lsp_cmd "lua-language-server",
   settings = {
     Lua = {
+      runtime = { version = "LuaJIT" },
       diagnostics = { globals = { "vim" } },
       workspace = { library = vim.api.nvim_get_runtime_file("", true) },
       telemetry = { enable = false },
+      hint = { enable = true, semicolon = "Disable" },
+      codeLens = { enable = true },
     },
   },
 })
 
--- Enable all LSP servers
-vim.lsp.enable({ "html", "cssls", "gopls", "eslint", "ts_ls", "lua_ls" })
+vim.lsp.enable { "html", "cssls", "gopls", "eslint", "ts_ls", "lua_ls" }

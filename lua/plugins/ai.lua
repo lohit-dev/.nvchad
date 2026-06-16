@@ -3,7 +3,7 @@ return {
     "xTacobaco/cursor-agent.nvim",
     lazy = false,
     config = function()
-      require("cursor-agent").setup({ cmd = "cursor-agent", args = {} })
+      require("cursor-agent").setup { cmd = "cursor-agent", args = {} }
     end,
   },
   {
@@ -18,21 +18,20 @@ return {
         cmd = "Copilot",
         event = "InsertEnter",
         config = function()
-          require("copilot").setup({
+          require("copilot").setup {
             suggestion = {
               enabled = true,
               auto_trigger = true,
               keymap = {
-                accept = "<S-Cr>"
-              }
+                accept = "<S-Cr>",
+              },
             },
-          })
+          }
         end,
-      }
+      },
     },
     build = "make tiktoken",
-    opts = {
-    },
+    opts = {},
   },
   -- {
   --   "yetone/avante.nvim",
