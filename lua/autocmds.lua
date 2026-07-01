@@ -1,14 +1,16 @@
 require "nvchad.autocmds"
 
 -- nvdash is a special buffer; global 'number' must be disabled per-window
-vim.api.nvim_create_autocmd({ "BufEnter", "FileType" }, {
-  pattern = "nvdash",
-  callback = function()
-    vim.wo.number = false
-    vim.wo.relativenumber = false
-    vim.wo.cursorline = false
-    vim.wo.signcolumn = "no"
-    vim.wo.foldcolumn = "0"
+vim.api.nvim_create_autocmd({ "BufEnter", "BufWinEnter", "FileType", "BufRead", "BufNew" }, {
+  callback = function(ev)
+    local ft = vim.bo[ev.buf].filetype
+    local bufname = vim.api.nvim_buf_get_name(ev.buf)
+    if ft == "nvdash" or bufname:find "nvdash" then
+      vim.notify(
+        string.format("event=%s ft=%s bufname=%s number=%s", ev.event, ft, bufname, tostring(vim.wo.number)),
+        vim.log.levels.INFO
+      )
+    end
   end,
 })
 
