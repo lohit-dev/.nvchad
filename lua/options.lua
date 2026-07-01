@@ -1,5 +1,5 @@
 require "nvchad.options"
-vim.cmd("let g:netrw_liststyle = 3")
+vim.cmd "let g:netrw_liststyle = 3"
 
 -- Dev tool bins missing from default shell PATH (mirrors conf.d/hyde/env.zsh)
 local path_prepend = {}

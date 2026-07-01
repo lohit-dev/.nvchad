@@ -8,6 +8,7 @@ return {
   { import = "plugins.harpoon" },
   { import = "plugins.ai" },
   { import = "plugins.leetcode" },
+  { import = "plugins.dressing" },
 
   {
     "stevearc/conform.nvim",

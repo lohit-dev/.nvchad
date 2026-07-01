@@ -1,9 +1,27 @@
-**This repo is supposed to be used as config by NvChad users!**
+# ⚡ nvim
 
-- The main nvchad repo (NvChad/NvChad) is used as a plugin by this repo.
-- So you just import its modules , like `require "nvchad.options" , require "nvchad.mappings"`
-- So you can delete the .git from this repo ( when you clone it locally ) or fork it :)
+A minimal, blazingly fast Neovim configuration built on [NvChad](https://nvchad.com/).
 
-# Credits
+### 🛠️ Stack
 
-1) Lazyvim starter https://github.com/LazyVim/starter as nvchad's starter was inspired by Lazyvim's . It made a lot of things easier!
+- **Languages:** Rust, Go, JS/TS (LSP + formatting pre-configured)
+- **Workflow:** Harpoon, AI integration, Leetcode
+- **UI:** Dressing.nvim
+
+### ⌨️ Keymaps
+
+| Key                 | Action                |
+| :------------------ | :-------------------- |
+| `<leader>w=`        | Equalize splits       |
+| `<leader>wx`        | Close split           |
+| `<C-Enter>`         | Toggle float terminal |
+| `<leader>ja` / `mm` | Harpoon (Add / Menu)  |
+| `<leader>1-4`       | Harpoon (Navigate)    |
+| `<leader>l*`        | Leetcode toolkit      |
+
+### 🚀 Install
+
+```bash
+git clone https://github.com/lohit-dev/nvchad_config.git ~/.config/nvim
+nvim
+```
