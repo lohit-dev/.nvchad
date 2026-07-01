@@ -45,3 +45,10 @@ map("n", "<leader>ll", "<cmd>Leet<cr>", { desc = "Leetcode home" })
 map("n", "<leader>ld", "<cmd>Leet daily<cr>", { desc = "Leetcode daily" })
 map("n", "<leader>lr", "<cmd>Leet run<cr>", { desc = "Leetcode run" })
 map("n", "<leader>ls", "<cmd>Leet submit<cr>", { desc = "Leetcode submit" })
+
+-- Custom Window & Terminal
+map("n", "<leader>w=", "<C-w>=", { desc = "Equalize splits" })
+map("n", "<leader>wx", "<cmd>close<CR>", { desc = "Close split" })
+map({ "n", "t" }, "<C-CR>", function()
+  require("nvchad.term").toggle { pos = "float", id = "floatTerm" }
+end, { desc = "Toggle floating terminal" })
