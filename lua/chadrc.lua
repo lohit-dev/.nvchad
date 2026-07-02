@@ -6,7 +6,8 @@
 local M = {}
 
 M.base46 = {
-  theme = "chadracula",
+  theme = "catppuccin",
+  transparency = true,
 
   hl_override = {
     Comment = { italic = true },
@@ -15,8 +16,15 @@ M.base46 = {
 }
 
 M.nvdash = { load_on_startup = true }
+
 M.ui = {
+  statusline = {
+    theme = "default",
+    separator_style = "round",
+  },
+
   tabufline = {
+    order = { "buffers", "tabs", "btns", "treeOffset" },
     lazyload = false,
   },
 }

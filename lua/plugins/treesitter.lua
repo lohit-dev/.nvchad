@@ -4,6 +4,7 @@ local parsers = {
   "javascript",
   "typescript",
   "tsx",
+  "python",
   "rust",
   "go",
   "lua",
@@ -13,6 +14,7 @@ local parsers = {
   "json",
   "yaml",
   "toml",
+  "dockerfile",
   "markdown",
   "markdown_inline",
 }

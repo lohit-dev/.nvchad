@@ -1,5 +1,7 @@
 return {
+  { import = "plugins.tree" },
   { import = "plugins.lsp" },
+  { import = "plugins.mason" },
   { import = "plugins.formatter" },
   { import = "plugins.treesitter" },
   { import = "plugins.go" },

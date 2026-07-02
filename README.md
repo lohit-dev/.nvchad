@@ -12,6 +12,11 @@ A minimal, blazingly fast Neovim configuration built on [NvChad](https://nvchad.
 
 | Key                 | Action                |
 | :------------------ | :-------------------- |
+| `<C-w>v`            | Vertical split        |
+| `<C-w>s`            | Horizontal split      |
+| `<C-w><` / `<C-w>>` | Resize width          |
+| `<C-w>-` / `<C-w>+` | Resize height         |
+| `<C-w>=`            | Equalize split sizes  |
 | `<leader>w=`        | Equalize splits       |
 | `<leader>wx`        | Close split           |
 | `<C-Enter>`         | Toggle float terminal |
