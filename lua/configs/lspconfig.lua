@@ -18,9 +18,11 @@ end
 
 -- Enable inlay hints for any LSP client that supports them
 vim.api.nvim_create_autocmd("LspAttach", {
-  group = vim.api.nvim_create_augroup("lsp-inlay-hints", { clear = true }),
+  group = vim.api.nvim_create_augroup("lsp-inlay-hints", { clear = false }),
   callback = function(args)
     local client = vim.lsp.get_client_by_id(args.data.client_id)
+    local filetype = vim.bo[args.buf].filetype
+
     if client and client.server_capabilities.inlayHintProvider then
       vim.lsp.inlay_hint.enable(true, { bufnr = args.buf })
     end
@@ -86,11 +88,11 @@ vim.lsp.config("ts_ls", {
       inlayHints = {
         includeInlayParameterNameHints = "literal",
         includeInlayParameterNameHintsWhenArgumentMatchesName = false,
-        includeInlayFunctionParameterTypeHints = true,
+        includeInlayFunctionParameterTypeHints = false,
         includeInlayVariableTypeHints = false,
-        includeInlayPropertyDeclarationTypeHints = true,
-        includeInlayFunctionLikeReturnTypeHints = true,
-        includeInlayEnumMemberValueHints = true,
+        includeInlayPropertyDeclarationTypeHints = false,
+        includeInlayFunctionLikeReturnTypeHints = false,
+        includeInlayEnumMemberValueHints = false,
       },
     },
     javascript = {

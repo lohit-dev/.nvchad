@@ -10,7 +10,7 @@ return {
   { import = "plugins.harpoon" },
   { import = "plugins.ai" },
   { import = "plugins.leetcode" },
-  { import = "plugins.dressing" },
+  { import = "plugins.tmux" },
 
   {
     "stevearc/conform.nvim",

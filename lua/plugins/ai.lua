@@ -23,7 +23,7 @@ return {
               enabled = true,
               auto_trigger = true,
               keymap = {
-                accept = "<S-Cr>",
+                accept = "<Tab>",
               },
             },
           }
