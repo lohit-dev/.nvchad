@@ -1,0 +1,43 @@
+return {
+  {
+    "ahmedkhalf/project.nvim",
+    lazy = false,
+    config = function()
+      require("project_nvim").setup {
+        detection_methods = { "lsp", "pattern" },
+        patterns = {
+          ".git",
+          ".hg",
+          ".svn",
+          "Makefile",
+          "justfile",
+          "package.json",
+          "package-lock.json",
+          "pnpm-lock.yaml",
+          "pnpm-workspace.yaml",
+          "yarn.lock",
+          "bun.lock",
+          "bun.lockb",
+          "tsconfig.json",
+          "jsconfig.json",
+          "deno.json",
+          "deno.jsonc",
+          "go.mod",
+          "Cargo.toml",
+          "pyproject.toml",
+          "requirements.txt",
+          "Pipfile",
+          "poetry.lock",
+          "setup.py",
+          "composer.json",
+          "Gemfile",
+          "mix.exs",
+          "rebar.config",
+          "build.zig",
+          "CMakeLists.txt",
+        },
+        silent_chdir = true,
+      }
+    end,
+  },
+}
