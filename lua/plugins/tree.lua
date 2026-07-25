@@ -12,7 +12,7 @@ return {
 
             while i <= #a and j <= #b do
               local char_a, char_b = a:sub(i, i), b:sub(j, j)
-              if char_a:match("%d") and char_b:match("%d") then
+              if char_a:match "%d" and char_b:match "%d" then
                 local number_a = a:match("%d+", i)
                 local number_b = b:match("%d+", j)
                 local trimmed_a = number_a:gsub("^0+", "")
