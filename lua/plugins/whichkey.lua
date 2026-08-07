@@ -7,9 +7,16 @@ return {
       opts.plugins = vim.tbl_deep_extend("force", opts.plugins or {}, {
         marks = false,
       })
-      -- Always show at the bottom
+      -- Always show at the bottom -- no_overlap is what actually needs to
+      -- be off here: which-key repositions/shrinks the popup whenever it
+      -- would overlap the cursor's screen row, which silently overrides the
+      -- fixed `row` above whenever the cursor is near the bottom of the
+      -- screen (that's why the popup looked complete at the top of a file
+      -- but got clipped to a handful of entries at the bottom -- it wasn't
+      -- respecting the fixed row at all in that case).
       opts.win = vim.tbl_deep_extend("force", opts.win or {}, {
         row = vim.o.lines,
+        no_overlap = false,
       })
       -- Group labels for every <leader> prefix
       opts.spec = {

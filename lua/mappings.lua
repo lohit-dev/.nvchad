@@ -39,13 +39,43 @@ map("n", "<C-=>", "<cmd>vertical resize +5<cr>", { desc = "Increase window width
 map("n", "<C-+>", "<cmd>vertical resize +5<cr>", { desc = "Increase window width" })
 map("n", "<C-->", "<cmd>vertical resize -5<cr>", { desc = "Decrease window width" })
 
--- LeetCode (plugin already ships via extras.lua, just wasn't bound to keys)
-map("n", "<leader>ll", "<cmd>Leet<cr>", { desc = "LeetCode menu" })
-map("n", "<leader>ld", "<cmd>Leet daily<cr>", { desc = "LeetCode daily" })
-map("n", "<leader>lr", "<cmd>Leet random<cr>", { desc = "LeetCode random" })
+-- LeetCode (plugin already ships via extras.lua, just wasn't bound to keys).
+--
+-- leetcode.nvim refuses to start ("Failed to initialize: `neovim` contains
+-- listed buffers") unless there are zero listed buffers open -- that's the
+-- plugin's own documented requirement, not a config issue. This helper
+-- closes any unmodified listed buffers before launching so the keymap just
+-- works from wherever you are; if something has unsaved changes it warns
+-- instead of discarding your work.
+local function leet(subcmd)
+  return function()
+    local dirty = {}
+    for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+      if vim.api.nvim_buf_is_loaded(buf) and vim.bo[buf].buflisted then
+        if vim.bo[buf].modified then
+          table.insert(dirty, vim.api.nvim_buf_get_name(buf))
+        else
+          vim.api.nvim_buf_delete(buf, {})
+        end
+      end
+    end
+    if #dirty > 0 then
+      vim.notify(
+        "LeetCode needs no buffers open -- save/close first:\n" .. table.concat(dirty, "\n"),
+        vim.log.levels.WARN
+      )
+      return
+    end
+    vim.cmd("Leet " .. subcmd)
+  end
+end
+
+map("n", "<leader>ll", leet "", { desc = "LeetCode menu" })
+map("n", "<leader>ld", leet "daily", { desc = "LeetCode daily" })
+map("n", "<leader>lr", leet "random", { desc = "LeetCode random" })
 map("n", "<leader>lt", "<cmd>Leet test<cr>", { desc = "LeetCode test" })
 map("n", "<leader>ls", "<cmd>Leet submit<cr>", { desc = "LeetCode submit" })
-map("n", "<leader>lo", "<cmd>Leet list<cr>", { desc = "LeetCode problem list" })
+map("n", "<leader>lo", leet "list", { desc = "LeetCode problem list" })
 map("n", "<leader>li", "<cmd>Leet tabs<cr>", { desc = "LeetCode switch tabs" })
 
 -- Copilot: nvchad's ai.lua only wires up the chat commands (aa/ae). These
