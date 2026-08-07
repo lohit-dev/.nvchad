@@ -64,9 +64,15 @@ return {
         { "<leader>hp", desc = "Preview hunk" },
         { "<leader>hb", desc = "Blame line" },
 
+        -- LeetCode
+        { "<leader>l", group = "󰡄 LeetCode" },
+
         -- Marks
         { "<leader>m", group = "󰃃 Marks" },
         { "<leader>ma", desc = "Find marks" },
+
+        -- Overseer (tasks)
+        { "<leader>o", group = " Tasks (Overseer)" },
 
         -- Toggle
         { "<leader>n", desc = "󰿠 Toggle line numbers" },

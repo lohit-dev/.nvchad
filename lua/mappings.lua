@@ -27,6 +27,35 @@ end, { desc = "Close buffers left" })
 
 -- windows
 map("n", "<leader>w=", "<C-w>=", { desc = "Equalize splits" })
+map("n", "<leader>wv", "<cmd>vsplit<cr>", { desc = "Split window vertically" })
+map("n", "<leader>wh", "<cmd>split<cr>", { desc = "Split window horizontally" })
+
+-- Resize the current split's width. Bound to the physical +/- key (no shift
+-- needed, same key), which most terminals report as <C-=>/<C--> regardless
+-- of whether shift is held -- if yours reports <C-+> as a distinct key
+-- (Kitty/Ghostty/WezTerm with the Kitty keyboard protocol on), that's mapped
+-- too so it works either way.
+map("n", "<C-=>", "<cmd>vertical resize +5<cr>", { desc = "Increase window width" })
+map("n", "<C-+>", "<cmd>vertical resize +5<cr>", { desc = "Increase window width" })
+map("n", "<C-->", "<cmd>vertical resize -5<cr>", { desc = "Decrease window width" })
+
+-- LeetCode (plugin already ships via extras.lua, just wasn't bound to keys)
+map("n", "<leader>ll", "<cmd>Leet<cr>", { desc = "LeetCode menu" })
+map("n", "<leader>ld", "<cmd>Leet daily<cr>", { desc = "LeetCode daily" })
+map("n", "<leader>lr", "<cmd>Leet random<cr>", { desc = "LeetCode random" })
+map("n", "<leader>lt", "<cmd>Leet test<cr>", { desc = "LeetCode test" })
+map("n", "<leader>ls", "<cmd>Leet submit<cr>", { desc = "LeetCode submit" })
+map("n", "<leader>lo", "<cmd>Leet list<cr>", { desc = "LeetCode problem list" })
+map("n", "<leader>li", "<cmd>Leet tabs<cr>", { desc = "LeetCode switch tabs" })
+
+-- Copilot: nvchad's ai.lua only wires up the chat commands (aa/ae). These
+-- lazy-load copilot.lua on first use via its `cmd = "Copilot"` spec, same as
+-- lvim -- <leader>at only toggles the ghost-text auto-trigger, not the whole
+-- client, that's what <leader>an/<leader>ad are for.
+map("n", "<leader>an", "<cmd>Copilot enable<cr>", { desc = "Enable Copilot" })
+map("n", "<leader>ad", "<cmd>Copilot disable<cr>", { desc = "Disable Copilot" })
+map("n", "<leader>as", "<cmd>Copilot status<cr>", { desc = "Copilot status" })
+map("n", "<leader>at", "<cmd>Copilot suggestion toggle_auto_trigger<cr>", { desc = "Toggle Copilot suggestions" })
 
 -- Git-safe Telescope: only run git builtins when inside a git repo
 local function git_safe(builtin, desc)
@@ -84,5 +113,27 @@ vim.api.nvim_create_autocmd("LspAttach", {
     map("n", "<leader>ce", function()
       vim.diagnostic.jump { count = 1, severity = vim.diagnostic.severity.ERROR, float = true }
     end, vim.tbl_extend("force", opts, { desc = "Next error" }))
+
+    -- Workspace folders
+    map(
+      "n",
+      "<leader>wa",
+      vim.lsp.buf.add_workspace_folder,
+      vim.tbl_extend("force", opts, { desc = "Add workspace folder" })
+    )
+    map("n", "<leader>wl", function()
+      -- No builtin telescope picker for this -- list_workspace_folders() is
+      -- just a plain string list, so a minimal pickers/finders/sorter picker
+      -- is all it needs.
+      require("telescope.pickers")
+        .new({}, {
+          prompt_title = "LSP Workspace Folders",
+          finder = require("telescope.finders").new_table {
+            results = vim.lsp.buf.list_workspace_folders(),
+          },
+          sorter = require("telescope.config").values.generic_sorter {},
+        })
+        :find()
+    end, vim.tbl_extend("force", opts, { desc = "List workspace folders" }))
   end,
 })
