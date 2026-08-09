@@ -41,6 +41,8 @@ return {
 				{ "<leader>ch", desc = "Cheatsheet" },
 				{ "<leader>cm", desc = "Git commits" },
 				{ "<leader>ci", desc = "Toggle inlay hints" },
+				{ "<leader>cc", desc = "Code snapshot -> clipboard", mode = "x" },
+				{ "<leader>cs", desc = "Code snapshot -> file", mode = "x" },
 
 				-- Diff
 				{ "<leader>d", group = " Diff" },

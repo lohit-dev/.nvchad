@@ -2,6 +2,29 @@ require("nvchad.mappings")
 
 local map = vim.keymap.set
 
+-- Inlay hints on/off is a global preference, not a per-buffer one -- persist
+-- it to a tiny state file so <leader>ci actually sticks across restarts
+-- instead of resetting to "on" every time nvim opens.
+local inlay_hints_state_file = vim.fn.stdpath("state") .. "/inlay_hints_enabled"
+
+local function inlay_hints_default()
+	local f = io.open(inlay_hints_state_file, "r")
+	if not f then
+		return true -- on by default until toggled at least once
+	end
+	local content = f:read("*a")
+	f:close()
+	return vim.trim(content or "") ~= "0"
+end
+
+local function inlay_hints_save(enabled)
+	local f = io.open(inlay_hints_state_file, "w")
+	if f then
+		f:write(enabled and "1" or "0")
+		f:close()
+	end
+end
+
 -- Terminal: not used -- tmux covers "new terminal" and overseer.nvim covers
 -- running/watching commands, so drop NvChad's built-in terminal keymaps
 -- entirely rather than leave dead/confusing bindings around.
@@ -147,151 +170,6 @@ end
 map("n", "<leader>cm", git_safe("git_commits", "telescope git commits"), { desc = "telescope git commits" })
 map("n", "<leader>gt", git_safe("git_status", "telescope git status"), { desc = "telescope git status" })
 
--- gopls exposes a handful of "web" actions in the same list as real code
--- actions -- browse arm64 assembly, browse pkg.go.dev docs, split package
--- (opens a browser diff), toggle compiler-opt-details (opens a browser
--- tab). None of these are ever useful from the code-action menu: docs are
--- one `K` away for whatever's under the cursor. Filtered by `kind` (stable
--- across gopls versions) so the real quickfix/refactor/organizeImports
--- actions still show up.
-local noisy_action_kinds = {
-	["source.assembly"] = true,
-	["source.doc"] = true,
-	["source.freesymbols"] = true,
-	["source.splitPackage"] = true,
-	["source.toggleCompilerOptDetails"] = true,
-	["gopls.doc.features"] = true,
-}
-
--- gopher.nvim's GoTagAdd/GoTagRm/GoTestAdd/GoImpl/GoJson/GoCmt/GoGenerate
--- have no LSP-side equivalent gopls could ever surface as a code action, so
--- they're listed here as plain commands and merged into the same menu
--- below -- one place to pick an action instead of a real code action list
--- plus a separate set of keybindings to remember.
-local function gopher_actions()
-	local function run(cmd)
-		return function()
-			vim.cmd(cmd)
-		end
-	end
-	return {
-		{ title = "Add json struct tags", run = run("GoTagAdd json") },
-		{ title = "Add yaml struct tags", run = run("GoTagAdd yaml") },
-		{ title = "Add validate struct tags", run = run("GoTagAdd validate") },
-		{ title = "Remove json struct tags", run = run("GoTagRm json") },
-		{ title = "Add test for func under cursor", run = run("GoTestAdd") },
-		{ title = "Add tests for all funcs in file", run = run("GoTestsAll") },
-		{ title = "Add tests for exported funcs", run = run("GoTestsExp") },
-		{ title = "JSON -> Go struct", run = run("GoJson") },
-		{ title = "Generate doc comment", run = run("GoCmt") },
-		{ title = "go generate (current package)", run = run("GoGenerate") },
-		{
-			title = "Implement interface...",
-			run = function()
-				vim.ui.input({ prompt = "Implement interface (e.g. io.Reader): " }, function(iface)
-					if iface and #iface > 0 then
-						vim.cmd("GoImpl " .. iface)
-					end
-				end)
-			end,
-		},
-	}
-end
-
--- Faithful trim of Neovim core's vim.lsp.buf.code_action (see
--- runtime/lua/vim/lsp/buf.lua) -- same request/resolve/apply flow, but
--- filters noisy gopls actions and, in Go buffers, merges gopher.nvim's
--- commands into the same vim.ui.select menu so there's one place to pick
--- an action from.
-local function code_action(opts)
-	opts = opts or {}
-	local bufnr = vim.api.nvim_get_current_buf()
-	local win = vim.api.nvim_get_current_win()
-	local clients = vim.lsp.get_clients({ bufnr = bufnr, method = "textDocument/codeAction" })
-	local extra = vim.bo[bufnr].filetype == "go" and gopher_actions() or {}
-
-	local function show(results)
-		local items = {}
-		for _, result in pairs(results) do
-			for _, action in pairs(result.result or {}) do
-				if not noisy_action_kinds[action.kind] then
-					table.insert(items, { title = action.title, lsp_action = action, ctx = result.ctx })
-				end
-			end
-		end
-		for _, a in ipairs(extra) do
-			table.insert(items, a)
-		end
-		if #items == 0 then
-			vim.notify("No code actions available", vim.log.levels.INFO)
-			return
-		end
-		vim.ui.select(items, {
-			prompt = "Code actions:",
-			kind = "codeaction",
-			format_item = function(item)
-				return item.title
-			end,
-		}, function(choice)
-			if not choice then
-				return
-			end
-			if choice.run then
-				choice.run()
-				return
-			end
-			local client = assert(vim.lsp.get_client_by_id(choice.ctx.client_id))
-			local action = choice.lsp_action
-			local function apply(a)
-				if a.edit then
-					vim.lsp.util.apply_workspace_edit(a.edit, client.offset_encoding)
-				end
-				if a.command then
-					local command = type(a.command) == "table" and a.command or a
-					client:exec_cmd(command, choice.ctx)
-				end
-			end
-			if type(action.title) == "string" and type(action.command) == "string" then
-				apply(action)
-				return
-			end
-			if not (action.edit and action.command) and client:supports_method("codeAction/resolve") then
-				client:request("codeAction/resolve", action, function(err, resolved)
-					if err then
-						if action.edit or action.command then
-							apply(action)
-						else
-							vim.notify(err.code .. ": " .. err.message, vim.log.levels.ERROR)
-						end
-					else
-						apply(resolved)
-					end
-				end, choice.ctx.bufnr)
-			else
-				apply(action)
-			end
-		end)
-	end
-
-	if #clients == 0 then
-		show({})
-		return
-	end
-
-	local results, remaining = {}, #clients
-	for _, client in ipairs(clients) do
-		local params = vim.lsp.util.make_range_params(win, client.offset_encoding)
-		params.context = { triggerKind = vim.lsp.protocol.CodeActionTriggerKind.Invoked }
-		client:request("textDocument/codeAction", params, function(err, result, ctx)
-			results[ctx.client_id] = { error = err, result = result, ctx = ctx }
-			remaining = remaining - 1
-			if remaining == 0 then
-				show(results)
-			end
-		end, bufnr)
-	end
-end
-
 -- LSP code actions (buffer-local, active only when LSP attaches)
 vim.api.nvim_create_autocmd("LspAttach", {
 	group = vim.api.nvim_create_augroup("UserLspKeymaps", { clear = true }),
@@ -299,23 +177,12 @@ vim.api.nvim_create_autocmd("LspAttach", {
 		local opts = { buffer = ev.buf, silent = true }
 
 		-- Code actions
-		map("n", "<leader>ca", function()
-			code_action()
-		end, vim.tbl_extend("force", opts, { desc = "Code action" }))
-		map("x", "<leader>ca", function()
-			code_action()
-		end, vim.tbl_extend("force", opts, { desc = "Code action (range)" }))
+		map("n", "<leader>ca", vim.lsp.buf.code_action, vim.tbl_extend("force", opts, { desc = "Code action" }))
+		map("x", "<leader>ca", vim.lsp.buf.code_action, vim.tbl_extend("force", opts, { desc = "Code action (range)" }))
 
-		-- Quick-fix (apply first available *LSP* action -- gopher commands
-		-- aren't "fixes" for anything under the cursor, so they're deliberately
-		-- left out of this one; use <leader>ca for those)
+		-- Quick-fix (apply first available code action)
 		map("n", "<leader>cq", function()
-			vim.lsp.buf.code_action({
-				apply = true,
-				filter = function(action)
-					return not noisy_action_kinds[action.kind]
-				end,
-			})
+			vim.lsp.buf.code_action({ apply = true })
 		end, vim.tbl_extend("force", opts, { desc = "Quick-fix (apply first action)" }))
 
 		-- Rename symbol
@@ -337,11 +204,13 @@ vim.api.nvim_create_autocmd("LspAttach", {
 		-- alone doesn't display anything -- it has to be enabled client-side too.
 		local client = vim.lsp.get_client_by_id(ev.data.client_id)
 		if client and client:supports_method("textDocument/inlayHint") then
-			vim.lsp.inlay_hint.enable(true, { bufnr = ev.buf })
+			vim.lsp.inlay_hint.enable(inlay_hints_default(), { bufnr = ev.buf })
 		end
 		map("n", "<leader>ci", function()
 			local bufnr = ev.buf
-			vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ bufnr = bufnr }), { bufnr = bufnr })
+			local enabled = not vim.lsp.inlay_hint.is_enabled({ bufnr = bufnr })
+			vim.lsp.inlay_hint.enable(enabled, { bufnr = bufnr })
+			inlay_hints_save(enabled)
 		end, vim.tbl_extend("force", opts, { desc = "Toggle inlay hints" }))
 
 		-- Diagnostics

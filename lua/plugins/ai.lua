@@ -17,13 +17,23 @@ return {
 						},
 						suggestion = {
 							enabled = true,
-							auto_trigger = true,
+							-- No ghost-text on every keystroke -- request one explicitly
+							-- with <M-]> (mirrors VS Code Copilot's own next-suggestion
+							-- shortcut) whenever you actually want it.
+							auto_trigger = false,
 							hide_during_completion = true,
 							keymap = {
 								accept = "<Tab>",
 							},
 						},
 					})
+
+					vim.keymap.set("i", "<M-]>", function()
+						require("copilot.suggestion").next()
+					end, { desc = "Copilot: request suggestion" })
+					vim.keymap.set("i", "<M-[>", function()
+						require("copilot.suggestion").dismiss()
+					end, { desc = "Copilot: dismiss suggestion" })
 
 					vim.api.nvim_create_autocmd("User", {
 						pattern = "BlinkCmpMenuOpen",
@@ -55,6 +65,13 @@ return {
 			"CopilotChatExplain",
 		},
 		build = "make tiktoken",
-		opts = {},
+		opts = {
+			-- GitHub's own model-router: picks from the currently-available
+			-- model set per-request based on load/task rather than one fixed
+			-- id, which is what was going stale and throwing "Model not found."
+			-- <leader>am (mappings.lua) still opens the picker if you ever want
+			-- to override this for a specific chat.
+			model = "auto",
+		},
 	},
 }

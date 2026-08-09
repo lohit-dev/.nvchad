@@ -39,4 +39,12 @@ return {
 			},
 		},
 	},
+	-- Bottom-right progress UI: shows "gopls: loading packages", "rust-analyzer:
+	-- indexing", etc. while a server is doing work, so you can actually tell
+	-- an LSP is alive and busy vs. just not attached at all.
+	{
+		"j-hui/fidget.nvim",
+		event = "LspAttach",
+		opts = {},
+	},
 }
