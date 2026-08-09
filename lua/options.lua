@@ -1,4 +1,4 @@
-require "nvchad.options"
+require("nvchad.options")
 
 local o = vim.o
 local opt = vim.opt
@@ -13,7 +13,7 @@ opt.background = "dark" -- Force dark version of colorschemes
 opt.signcolumn = "yes" -- Always show the sign column (prevents text from shifting when git signs appear)
 opt.guicursor = ""
 opt.scrolloff = 8 -- keep 8 lines of context above/below the cursor -- matches lvim
-opt.shortmess:append "W" -- suppress "written" messages on save, on top of base's "sI"
+opt.shortmess:append("W") -- suppress "written" messages on save, on top of base's "sI"
 
 -- Wrapping & Text Formatting
 opt.wrap = true -- Visually wrap long lines
