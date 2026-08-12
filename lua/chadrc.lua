@@ -25,7 +25,7 @@ M.nvdash = { load_on_startup = true }
 -- overload as a separate signature. Turning this off doesn't lose the
 -- feature -- `<leader>sh` (mappings.lua) still calls the same function
 -- on demand, it just stops firing itself on every keystroke.
-M.lsp = { signature = false }
+M.lsp = { signature = true }
 
 M.ui = {
 	statusline = {
