@@ -15,6 +15,7 @@ return {
 				"rust",
 				"typescript",
 				"javascript",
+				"java",
 			},
 		},
 	},

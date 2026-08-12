@@ -6,7 +6,8 @@ local opt = vim.opt
 -- UI & Display Settings
 o.cursorline = false -- matches lvim -- no highlighted current line
 o.cursorlineopt = "number" -- moot while cursorline is off, kept for parity with lvim
-opt.laststatus = 0 -- No statusline at all (nvchad's default is 3 = one global one) -- matches lvim
+opt.laststatus = 3 -- One global statusline -- nvchad's default; renders the round/bubble
+-- separator style from chadrc.lua's `M.ui.statusline`
 opt.cmdheight = 0 -- No command-line row either, same minimal-chrome look as lvim
 opt.termguicolors = true -- Enable 24-bit RGB colors in the terminal
 opt.background = "dark" -- Force dark version of colorschemes

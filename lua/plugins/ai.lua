@@ -23,7 +23,7 @@ return {
 							auto_trigger = false,
 							hide_during_completion = true,
 							keymap = {
-								accept = "<Tab>",
+								accept = "<C-l>",
 							},
 						},
 					})

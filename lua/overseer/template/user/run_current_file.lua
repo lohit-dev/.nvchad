@@ -25,6 +25,15 @@ local run_cmds = {
 	lua = function()
 		return { "nvim", "-l", vim.fn.expand("%:p") }
 	end,
+	-- Java 11+'s single-file source-launch mode: compiles in memory and runs
+	-- straight off the .java file, no javac/classpath/project setup needed.
+	-- Fine for a standalone file; once you're inside an actual Maven/Gradle
+	-- project (Spring Boot included) reach for the "Spring Boot: run" task
+	-- or `<leader>oc` (OverseerShell) with `mvn spring-boot:run` / `./gradlew
+	-- bootRun` instead -- this won't see your project's classpath/dependencies.
+	java = function()
+		return { "java", vim.fn.expand("%:p") }
+	end,
 }
 
 return {

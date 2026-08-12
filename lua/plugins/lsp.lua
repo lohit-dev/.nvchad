@@ -20,6 +20,13 @@ return {
 				"dockerfile-language-server",
 				"json-lsp",
 				"yaml-language-server",
+				"jdtls",
+				-- Not wired to anything yet (no nvim-dap / nvim-jdtls in this
+				-- config) -- installed now so the jars are already sitting in
+				-- Mason's registry once Spring Boot work starts and these get
+				-- hooked up as jdtls bundles for debugging/test-running.
+				"java-debug-adapter",
+				"java-test",
 			},
 		},
 	},
@@ -36,7 +43,17 @@ return {
 				"dockerls",
 				"jsonls",
 				"yamlls",
+				"jdtls",
 			},
+			-- Default, made explicit: enables each server via `vim.lsp.enable()`
+			-- the moment Mason confirms it's actually installed, rather than
+			-- eagerly at startup. configs/lspconfig.lua's jdtls comment explains
+			-- why this matters -- freshly-added servers (jdtls right now) get
+			-- installed async in the background, and this is what makes them
+			-- attach automatically once that finishes instead of failing with
+			-- "not installed, missing from PATH, or not executable" if you open
+			-- a matching file before the install completes.
+			automatic_enable = true,
 		},
 	},
 	-- Bottom-right progress UI: shows "gopls: loading packages", "rust-analyzer:

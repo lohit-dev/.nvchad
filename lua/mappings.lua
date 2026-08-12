@@ -40,6 +40,24 @@ for _, lhs in ipairs({ "<A-h>", "<A-v>", "<A-i>" }) do
 end
 pcall(vim.keymap.del, "t", "<C-x>")
 
+-- Terminal-mode escape: NvChad's own <C-x> escape got dropped above, but
+-- :terminal buffers still show up here and there (overseer task output uses
+-- a real terminal buffer under the hood -- see overseer.lua's output.use_terminal,
+-- and any ad-hoc `:term`/`:vs term://...` split). Without a mapping there's no
+-- way back to Normal mode: plain <Esc> is passed straight through to the
+-- program running in the terminal, it isn't intercepted by Neovim.
+-- <C-\><C-n> is the actual built-in escape sequence; this just binds it to
+-- the muscle-memory key.
+-- CAVEAT: <C-[> and a literal <Esc> keypress are the exact same byte (0x1B)
+-- over a plain terminal connection, so this mapping also fires on plain Esc
+-- unless your terminal emulator sends the Kitty keyboard protocol's extended
+-- CSI-u encoding to disambiguate them (Kitty/Ghostty/WezTerm with that
+-- protocol enabled do; most others don't). If you use a nested TUI program
+-- inside the terminal (vim-in-vim, less, fzf, ...) that expects a real Esc,
+-- this will exit the outer terminal buffer instead of reaching it -- use
+-- <C-\><C-n> directly in that case.
+map("t", "<C-[>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
+
 -- <C-h/j/k/l> tmux-vs-window-nav fix: NvChad core (required above) binds
 -- these to plain `<C-w>h/j/k/l` (in-nvim window nav only). tmux.lua's lazy
 -- `keys` spec registers vim-tmux-navigator on the same keys, but since it
@@ -105,45 +123,6 @@ map("n", "<leader>wh", "<cmd>split<cr>", { desc = "Split window horizontally" })
 map("n", "<C-=>", "<cmd>vertical resize +5<cr>", { desc = "Increase window width" })
 map("n", "<C-+>", "<cmd>vertical resize +5<cr>", { desc = "Increase window width" })
 map("n", "<C-->", "<cmd>vertical resize -5<cr>", { desc = "Decrease window width" })
-
--- LeetCode (plugin already ships via extras.lua, just wasn't bound to keys).
---
--- leetcode.nvim refuses to start ("Failed to initialize: `neovim` contains
--- listed buffers") unless there are zero listed buffers open -- that's the
--- plugin's own documented requirement, not a config issue. This helper
--- closes any unmodified listed buffers before launching so the keymap just
--- works from wherever you are; if something has unsaved changes it warns
--- instead of discarding your work.
-local function leet(subcmd)
-	return function()
-		local dirty = {}
-		for _, buf in ipairs(vim.api.nvim_list_bufs()) do
-			if vim.api.nvim_buf_is_loaded(buf) and vim.bo[buf].buflisted then
-				if vim.bo[buf].modified then
-					table.insert(dirty, vim.api.nvim_buf_get_name(buf))
-				else
-					vim.api.nvim_buf_delete(buf, {})
-				end
-			end
-		end
-		if #dirty > 0 then
-			vim.notify(
-				"LeetCode needs no buffers open -- save/close first:\n" .. table.concat(dirty, "\n"),
-				vim.log.levels.WARN
-			)
-			return
-		end
-		vim.cmd("Leet " .. subcmd)
-	end
-end
-
-map("n", "<leader>ll", leet(""), { desc = "LeetCode menu" })
-map("n", "<leader>ld", leet("daily"), { desc = "LeetCode daily" })
-map("n", "<leader>lr", leet("random"), { desc = "LeetCode random" })
-map("n", "<leader>lt", "<cmd>Leet test<cr>", { desc = "LeetCode test" })
-map("n", "<leader>ls", "<cmd>Leet submit<cr>", { desc = "LeetCode submit" })
-map("n", "<leader>lo", leet("list"), { desc = "LeetCode problem list" })
-map("n", "<leader>li", "<cmd>Leet tabs<cr>", { desc = "LeetCode switch tabs" })
 
 -- Copilot: nvchad's ai.lua only wires up the chat commands (aa/ae). These
 -- lazy-load copilot.lua on first use via its `cmd = "Copilot"` spec, same as
