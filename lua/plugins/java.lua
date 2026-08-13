@@ -1,34 +1,44 @@
 return {
-	-- Deliberately nvim-jdtls, not nvim-java: nvim-java bundles its own JDK
-	-- management, DAP wiring, and test runner UI on top of jdtls -- a much
-	-- heavier layer than wanted here, and the two aren't compatible side by
-	-- side anyway (nvim-java requires removing nvim-jdtls entirely). This
-	-- config already covers what nvim-java's extra layer would have: Mason
-	-- installs the JDK-backed jdtls binary itself (plugins/lsp.lua), and
-	-- overseer's user templates cover run/test/spring-boot-run. nvim-jdtls
-	-- is the "keep it simple, configure it yourself" option -- see
-	-- ftplugin/java.lua for the actual start_or_attach setup, which is
-	-- where all the real configuration lives (nvim-jdtls has no `opts`/
-	-- `config` of its own -- it's driven entirely from ftplugin/java.lua,
-	-- run fresh every time a Java buffer loads).
+	-- Switched from nvim-jdtls + spring-boot.nvim to nvim-java: it manages
+	-- its own JDK, jdtls, java-test, java-debug-adapter, and lombok installs
+	-- through its own Mason registry (registries below), and includes Spring
+	-- Boot support (completion/validation for annotations and
+	-- application.properties/yml) out of the box -- one plugin instead of
+	-- three, with no ftplugin/java.lua of our own to maintain. The two
+	-- approaches are also mutually exclusive: nvim-java replaces nvim-jdtls
+	-- entirely rather than building on it.
+	--
+	-- One trade-off worth knowing: nvim-java pulls in mfussenegger/nvim-dap
+	-- and nvim-java-dap as hard dependencies (there's no supported way to
+	-- install it without them), so DAP support comes along whether it gets
+	-- used or not. It's inert unless something actually calls into it though
+	-- -- running/testing here still goes through overseer (<leader>or /
+	-- overseer/template/user/*.lua), not nvim-java's own DAP-backed runner.
+	--
+	-- Loaded on `ft = "java"` like the rest of this config's language
+	-- plugins (go.lua, rust.lua); its `config` function runs exactly once,
+	-- the first time a .java buffer opens, and both nvim-java itself and
+	-- jdtls need to be initialized in that same call, in this order --
+	-- nvim-java's setup() has to run before lspconfig's jdtls.setup() so it
+	-- can register its own jdtls command/bundles first.
 	{
-		"mfussenegger/nvim-jdtls",
+		"nvim-java/nvim-java",
 		ft = "java",
-	},
-
-	-- Spring Boot support: runs the actual Spring Boot language server
-	-- (VMware's sts4, same one VS Code's Spring Boot extension uses) as a
-	-- jdtls bundle, wired in from ftplugin/java.lua. Gives completion/
-	-- validation for annotations (@Autowired, @Bean, @RequestMapping, ...)
-	-- and application.properties/.yml keys -- none of which plain jdtls
-	-- understands on its own. Its symbol-search commands (e.g. jumping to
-	-- `@Component`-annotated beans) optionally use fzf-lua or telescope for
-	-- the picker UI -- this config already has telescope (plugins/
-	-- telescope.lua), so no extra fuzzy-finder dependency needed here.
-	{
-		"JavaHello/spring-boot.nvim",
-		ft = { "java", "yaml", "jproperties" },
-		dependencies = { "mfussenegger/nvim-jdtls" },
-		opts = {},
+		dependencies = {
+			"nvim-java/lua-async-await",
+			"nvim-java/nvim-java-refactor",
+			"nvim-java/nvim-java-core",
+			"nvim-java/nvim-java-test",
+			"nvim-java/nvim-java-dap",
+			"MunifTanjim/nui.nvim",
+			"neovim/nvim-lspconfig",
+			"mfussenegger/nvim-dap",
+		},
+		config = function()
+			require("java").setup()
+			require("lspconfig").jdtls.setup({
+				capabilities = require("nvchad.configs.lspconfig").capabilities,
+			})
+		end,
 	},
 }

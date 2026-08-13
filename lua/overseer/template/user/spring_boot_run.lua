@@ -1,8 +1,7 @@
--- Spring Boot isn't set up yet (per the jdtls comment in configs/lspconfig.lua),
--- but the run command itself doesn't depend on any of that -- it's just the
--- Maven/Gradle wrapper's boot-run goal. Wiring this now means it's just
--- there, correctly, whenever a Spring Boot project actually shows up,
--- instead of being another thing to remember to configure later.
+-- This is a plain Maven/Gradle wrapper boot-run task -- independent of
+-- whatever's providing LSP/completion for Java (nvim-java, plugins/java.lua)
+-- and useful either way: a shell task with output in a vsplit rather than a
+-- DAP-driven run.
 --
 -- Detection deliberately checks file *contents*, not just presence of
 -- pom.xml/build.gradle -- those exist for any Maven/Gradle project, Spring

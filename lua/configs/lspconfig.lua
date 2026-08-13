@@ -80,21 +80,15 @@ vim.lsp.config("tsgo", {
 	},
 })
 
--- Java is NOT handled here. jdtls needs the mfussenegger/nvim-jdtls plugin
--- for actual control (organize imports, extract variable/method/constant,
--- generate constructor/toString/hashCode+equals, Spring Boot bundle
--- wiring) rather than the plain vim.lsp.enable("jdtls") default -- see
--- ftplugin/java.lua for the real setup and plugins/java.lua for the plugin
--- spec (nvim-jdtls + spring-boot.nvim). Deliberately not nvim-java either:
--- that's a much heavier layer (own JDK management, DAP, test runner) than
--- wanted, and it's incompatible with nvim-jdtls side by side anyway.
---
--- jdtls is also deliberately left OUT of mason-lspconfig's `automatic_enable`
--- (plugins/lsp.lua) -- that calls plain `vim.lsp.enable("jdtls")` the moment
--- Mason finishes installing it, which would start a second, differently-
--- configured jdtls client racing the one ftplugin/java.lua starts for the
--- same buffer. Mason still installs the jdtls binary itself (ensure_installed
--- in plugins/lsp.lua); ftplugin/java.lua's cmd just points straight at that
--- Mason-installed wrapper script on $PATH.
+-- Java is NOT handled here. Using nvim-java (plugins/java.lua) instead of a
+-- manual jdtls setup -- it manages its own JDK/jdtls/java-test/
+-- java-debug-adapter/lombok installs through its own Mason registry and
+-- covers Spring Boot support out of the box, needing far less hand-rolled
+-- config than wiring nvim-jdtls + spring-boot.nvim + Mason ourselves. It
+-- calls `require("lspconfig").jdtls.setup({})` internally, which is why
+-- jdtls stays out of both the plain `servers` list below and
+-- mason-lspconfig's `automatic_enable` (plugins/lsp.lua) -- either one
+-- calling `vim.lsp.enable("jdtls")` on top would start a second,
+-- differently-configured client racing nvim-java's.
 local servers = { "html", "cssls", "gopls", "tsgo", "pyright", "lua_ls", "dockerls", "jsonls", "yamlls" }
 vim.lsp.enable(servers)

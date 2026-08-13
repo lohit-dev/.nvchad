@@ -14,10 +14,9 @@ local options = {
 		-- java is deliberately NOT here. `lsp_fallback = true` below means
 		-- format_on_save already reaches for whatever LSP formatter is
 		-- attached when a filetype has no conform formatter of its own --
-		-- for java that's jdtls's built-in formatter (enabled via
-		-- settings.java.format in ftplugin/java.lua), so this Just Works
-		-- without a separate external formatter (google-java-format etc.)
-		-- being installed.
+		-- for java that's jdtls's own formatter (nvim-java, plugins/java.lua,
+		-- wires up jdtls under the hood), so this Just Works without a
+		-- separate external formatter (google-java-format etc.) installed.
 	},
 
 	format_on_save = {
