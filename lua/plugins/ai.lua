@@ -1,77 +1,58 @@
 return {
 	{
-		"CopilotC-Nvim/CopilotChat.nvim",
+		"zbirenbaum/copilot.lua",
 		dependencies = {
-			{ "nvim-lua/plenary.nvim", branch = "master" },
-			{
-				"zbirenbaum/copilot.lua",
-				dependencies = {
-					"copilotlsp-nvim/copilot-lsp",
+			"copilotlsp-nvim/copilot-lsp",
+		},
+		cmd = "Copilot",
+		event = "InsertEnter",
+		config = function()
+			require("copilot").setup({
+				panel = {
+					enabled = false,
 				},
-				cmd = "Copilot",
-				event = "InsertEnter",
-				config = function()
-					require("copilot").setup({
-						panel = {
-							enabled = false,
-						},
-						suggestion = {
-							enabled = true,
-							-- No ghost-text on every keystroke -- request one explicitly
-							-- with <M-]> (mirrors VS Code Copilot's own next-suggestion
-							-- shortcut) whenever you actually want it.
-							auto_trigger = false,
-							hide_during_completion = true,
-							keymap = {
-								accept = "<C-l>",
-							},
-						},
-					})
+				suggestion = {
+					enabled = true,
+					-- No ghost-text on every keystroke -- request one explicitly
+					-- with <M-]> (mirrors VS Code Copilot's own next-suggestion
+					-- shortcut) whenever you actually want it.
+					auto_trigger = false,
+					hide_during_completion = true,
+					keymap = {
+						accept = "<C-l>",
+					},
+				},
+			})
 
-					vim.keymap.set("i", "<M-]>", function()
-						require("copilot.suggestion").next()
-					end, { desc = "Copilot: request suggestion" })
-					vim.keymap.set("i", "<M-[>", function()
-						require("copilot.suggestion").dismiss()
-					end, { desc = "Copilot: dismiss suggestion" })
+			-- Start fully disabled. A fresh clone (no cache/state) would
+			-- otherwise attach Copilot immediately on the first InsertEnter,
+			-- which is exactly the "blocking" behaviour we don't want. Turn
+			-- it on yourself with <leader>an (`:Copilot enable`) whenever you
+			-- actually want suggestions for that session.
+			vim.schedule(function()
+				pcall(vim.cmd, "Copilot disable")
+			end)
 
-					vim.api.nvim_create_autocmd("User", {
-						pattern = "BlinkCmpMenuOpen",
-						callback = function()
-							vim.b.copilot_suggestion_hidden = true
-						end,
-					})
+			vim.keymap.set("i", "<M-]>", function()
+				require("copilot.suggestion").next()
+			end, { desc = "Copilot: request suggestion" })
+			vim.keymap.set("i", "<M-[>", function()
+				require("copilot.suggestion").dismiss()
+			end, { desc = "Copilot: dismiss suggestion" })
 
-					vim.api.nvim_create_autocmd("User", {
-						pattern = "BlinkCmpMenuClose",
-						callback = function()
-							vim.b.copilot_suggestion_hidden = false
-						end,
-					})
+			vim.api.nvim_create_autocmd("User", {
+				pattern = "BlinkCmpMenuOpen",
+				callback = function()
+					vim.b.copilot_suggestion_hidden = true
 				end,
-			},
-		},
-		cmd = {
-			"CopilotChat",
-			"CopilotChatOpen",
-			"CopilotChatClose",
-			"CopilotChatToggle",
-			"CopilotChatStop",
-			"CopilotChatReset",
-			"CopilotChatSave",
-			"CopilotChatLoad",
-			"CopilotChatPrompts",
-			"CopilotChatModels",
-			"CopilotChatExplain",
-		},
-		build = "make tiktoken",
-		opts = {
-			-- GitHub's own model-router: picks from the currently-available
-			-- model set per-request based on load/task rather than one fixed
-			-- id, which is what was going stale and throwing "Model not found."
-			-- <leader>am (mappings.lua) still opens the picker if you ever want
-			-- to override this for a specific chat.
-			model = "auto",
-		},
+			})
+
+			vim.api.nvim_create_autocmd("User", {
+				pattern = "BlinkCmpMenuClose",
+				callback = function()
+					vim.b.copilot_suggestion_hidden = false
+				end,
+			})
+		end,
 	},
 }

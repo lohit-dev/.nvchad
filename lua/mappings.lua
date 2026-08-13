@@ -85,17 +85,11 @@ end
 map("n", ";", ":", { desc = "CMD enter command mode" })
 pcall(vim.keymap.del, "n", "'")
 map("n", "'", "<cmd>Telescope projects<CR>", { desc = "Projects", nowait = true })
-map("n", "<leader>aa", "<cmd>CopilotChatToggle<CR>", { desc = "Toggle Copilot Chat" })
-map("n", "<leader>ae", "<cmd>CopilotChatExplain<CR>", { desc = "Explain with Copilot Chat" })
--- CopilotChat.nvim ships a hardcoded default model in its own config, which
--- can go stale whenever GitHub changes what your account/org actually has
--- access to -- that's the "Model not found" error (typing/sending works
--- fine, it's the model id in the request that's invalid). This asks Copilot
--- for the models actually available right now and lets you pick one.
-map("n", "<leader>am", "<cmd>CopilotChatModels<CR>", { desc = "Pick Copilot Chat model" })
+map("n", "<leader>aa", "<cmd>ChatGPT<CR>", { desc = "Toggle ChatGPT" })
+map("n", "<leader>ae", "<cmd>ChatGPTEditWithInstructions<CR>", { desc = "Edit with ChatGPT instructions" })
 map("n", "<leader>dd", "<cmd>DiffviewOpen<CR>", { desc = "Open diffview" })
 
-map("x", "<leader>ae", "<cmd>CopilotChatExplain<CR>", { desc = "Explain selection with Copilot Chat" })
+map("x", "<leader>ae", "<cmd>ChatGPTEditWithInstructions<CR>", { desc = "Edit selection with ChatGPT instructions" })
 map("i", "jj", "<ESC>")
 
 map("n", "U", "~h", { desc = "Uppercase first letter of current word" })
@@ -124,10 +118,11 @@ map("n", "<C-=>", "<cmd>vertical resize +5<cr>", { desc = "Increase window width
 map("n", "<C-+>", "<cmd>vertical resize +5<cr>", { desc = "Increase window width" })
 map("n", "<C-->", "<cmd>vertical resize -5<cr>", { desc = "Decrease window width" })
 
--- Copilot: nvchad's ai.lua only wires up the chat commands (aa/ae). These
--- lazy-load copilot.lua on first use via its `cmd = "Copilot"` spec, same as
--- lvim -- <leader>at only toggles the ghost-text auto-trigger, not the whole
--- client, that's what <leader>an/<leader>ad are for.
+-- Copilot suggestions only (chat lives in ChatGPT.nvim now, see aa/ae
+-- above). These lazy-load copilot.lua on first use via its `cmd = "Copilot"`
+-- spec. ai.lua starts the client disabled on every launch, so <leader>an is
+-- what actually turns suggestions on for the session; <leader>at only
+-- toggles the ghost-text auto-trigger once it's already enabled.
 map("n", "<leader>an", "<cmd>Copilot enable<cr>", { desc = "Enable Copilot" })
 map("n", "<leader>ad", "<cmd>Copilot disable<cr>", { desc = "Disable Copilot" })
 map("n", "<leader>as", "<cmd>Copilot status<cr>", { desc = "Copilot status" })

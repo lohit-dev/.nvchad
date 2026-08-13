@@ -21,7 +21,7 @@ return {
 			-- Group labels for every <leader> prefix
 			opts.spec = {
 				-- AI
-				{ "<leader>a", group = "󰭹 AI (Copilot)" },
+				{ "<leader>a", group = "󰭹 AI (ChatGPT + Copilot suggestions)" },
 				{ "<leader>aa", desc = "Toggle chat" },
 				{ "<leader>ae", desc = "Explain selection" },
 				{ "<leader>am", desc = "Pick model" },
