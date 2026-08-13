@@ -1,28 +1,28 @@
-require("nvchad.mappings")
+require "nvchad.mappings"
 
 local map = vim.keymap.set
 
 -- Inlay hints on/off is a global preference, not a per-buffer one -- persist
 -- it to a tiny state file so <leader>ci actually sticks across restarts
 -- instead of resetting to "on" every time nvim opens.
-local inlay_hints_state_file = vim.fn.stdpath("state") .. "/inlay_hints_enabled"
+local inlay_hints_state_file = vim.fn.stdpath "state" .. "/inlay_hints_enabled"
 
 local function inlay_hints_default()
-	local f = io.open(inlay_hints_state_file, "r")
-	if not f then
-		return true -- on by default until toggled at least once
-	end
-	local content = f:read("*a")
-	f:close()
-	return vim.trim(content or "") ~= "0"
+  local f = io.open(inlay_hints_state_file, "r")
+  if not f then
+    return true -- on by default until toggled at least once
+  end
+  local content = f:read "*a"
+  f:close()
+  return vim.trim(content or "") ~= "0"
 end
 
 local function inlay_hints_save(enabled)
-	local f = io.open(inlay_hints_state_file, "w")
-	if f then
-		f:write(enabled and "1" or "0")
-		f:close()
-	end
+  local f = io.open(inlay_hints_state_file, "w")
+  if f then
+    f:write(enabled and "1" or "0")
+    f:close()
+  end
 end
 
 -- Terminal: not used -- tmux covers "new terminal" and overseer.nvim covers
@@ -32,11 +32,11 @@ end
 --   <A-h> / <A-v> / <A-i>   -- toggleable horizontal/vertical/float terminal
 --   <leader>pt              -- telescope picker for hidden terminals
 --   <C-x> (terminal mode)   -- escape terminal mode
-for _, lhs in ipairs({ "<leader>h", "<leader>v", "<leader>pt" }) do
-	pcall(vim.keymap.del, "n", lhs)
+for _, lhs in ipairs { "<leader>h", "<leader>v", "<leader>pt" } do
+  pcall(vim.keymap.del, "n", lhs)
 end
-for _, lhs in ipairs({ "<A-h>", "<A-v>", "<A-i>" }) do
-	pcall(vim.keymap.del, { "n", "t" }, lhs)
+for _, lhs in ipairs { "<A-h>", "<A-v>", "<A-i>" } do
+  pcall(vim.keymap.del, { "n", "t" }, lhs)
 end
 pcall(vim.keymap.del, "t", "<C-x>")
 
@@ -66,8 +66,8 @@ map("t", "<C-[>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
 -- wasn't reliably moving into the tmux pane on the right). Re-point them at
 -- vim-tmux-navigator explicitly so they stay authoritative regardless of
 -- plugin load order.
-for key, dir in pairs({ h = "Left", j = "Down", k = "Up", l = "Right" }) do
-	map("n", "<C-" .. key .. ">", "<cmd>TmuxNavigate" .. dir .. "<cr>", { desc = "tmux/window " .. dir })
+for key, dir in pairs { h = "Left", j = "Down", k = "Up", l = "Right" } do
+  map("n", "<C-" .. key .. ">", "<cmd>TmuxNavigate" .. dir .. "<cr>", { desc = "tmux/window " .. dir })
 end
 map("n", "<C-\\>", "<cmd>TmuxNavigatePrevious<cr>", { desc = "tmux/window previous" })
 
@@ -78,8 +78,8 @@ map("n", "<C-\\>", "<cmd>TmuxNavigatePrevious<cr>", { desc = "tmux/window previo
 -- instead of fixing it. Unmap it in nvim (a stray <C-s> now falls through
 -- as a no-op key) -- if the freeze still happens outside nvim, add
 -- `stty -ixon` to your shell rc too.
-for _, mode in ipairs({ "n", "i", "v" }) do
-	pcall(vim.keymap.del, mode, "<C-s>")
+for _, mode in ipairs { "n", "i", "v" } do
+  pcall(vim.keymap.del, mode, "<C-s>")
 end
 
 map("n", ";", ":", { desc = "CMD enter command mode" })
@@ -98,10 +98,10 @@ map("n", "<leader>u", "g~w", { desc = "Toggle case of word" })
 -- buffers
 map("n", "<leader>b", "<nop>", { desc = "buffer (disabled)" })
 map("n", "<leader>br", function()
-	require("nvchad.tabufline").closeBufs_at_direction("right")
+  require("nvchad.tabufline").closeBufs_at_direction "right"
 end, { desc = "Close buffers right" })
 map("n", "<leader>bl", function()
-	require("nvchad.tabufline").closeBufs_at_direction("left")
+  require("nvchad.tabufline").closeBufs_at_direction "left"
 end, { desc = "Close buffers left" })
 
 -- windows
@@ -130,14 +130,14 @@ map("n", "<leader>at", "<cmd>Copilot suggestion toggle_auto_trigger<cr>", { desc
 
 -- Git-safe Telescope: only run git builtins when inside a git repo
 local function git_safe(builtin, desc)
-	return function()
-		local result = vim.fn.systemlist("git -C " .. vim.fn.expand("%:p:h") .. " rev-parse --git-dir 2>/dev/null")
-		if vim.v.shell_error ~= 0 or #result == 0 then
-			vim.notify("Not a git directory", vim.log.levels.WARN, { title = "Telescope" })
-			return
-		end
-		require("telescope.builtin")[builtin]()
-	end
+  return function()
+    local result = vim.fn.systemlist("git -C " .. vim.fn.expand "%:p:h" .. " rev-parse --git-dir 2>/dev/null")
+    if vim.v.shell_error ~= 0 or #result == 0 then
+      vim.notify("Not a git directory", vim.log.levels.WARN, { title = "Telescope" })
+      return
+    end
+    require("telescope.builtin")[builtin]()
+  end
 end
 
 -- Override NvChad's default git telescope mappings
@@ -146,79 +146,79 @@ map("n", "<leader>gt", git_safe("git_status", "telescope git status"), { desc = 
 
 -- LSP code actions (buffer-local, active only when LSP attaches)
 vim.api.nvim_create_autocmd("LspAttach", {
-	group = vim.api.nvim_create_augroup("UserLspKeymaps", { clear = true }),
-	callback = function(ev)
-		local opts = { buffer = ev.buf, silent = true }
+  group = vim.api.nvim_create_augroup("UserLspKeymaps", { clear = true }),
+  callback = function(ev)
+    local opts = { buffer = ev.buf, silent = true }
 
-		-- Code actions
-		map("n", "<leader>ca", vim.lsp.buf.code_action, vim.tbl_extend("force", opts, { desc = "Code action" }))
-		map("x", "<leader>ca", vim.lsp.buf.code_action, vim.tbl_extend("force", opts, { desc = "Code action (range)" }))
+    -- Code actions
+    map("n", "<leader>ca", vim.lsp.buf.code_action, vim.tbl_extend("force", opts, { desc = "Code action" }))
+    map("x", "<leader>ca", vim.lsp.buf.code_action, vim.tbl_extend("force", opts, { desc = "Code action (range)" }))
 
-		-- Quick-fix (apply first available code action)
-		map("n", "<leader>cq", function()
-			vim.lsp.buf.code_action({ apply = true })
-		end, vim.tbl_extend("force", opts, { desc = "Quick-fix (apply first action)" }))
+    -- Quick-fix (apply first available code action)
+    map("n", "<leader>cq", function()
+      vim.lsp.buf.code_action { apply = true }
+    end, vim.tbl_extend("force", opts, { desc = "Quick-fix (apply first action)" }))
 
-		-- Rename symbol
-		map("n", "<leader>rn", vim.lsp.buf.rename, vim.tbl_extend("force", opts, { desc = "Rename symbol" }))
+    -- Rename symbol
+    map("n", "<leader>rn", vim.lsp.buf.rename, vim.tbl_extend("force", opts, { desc = "Rename symbol" }))
 
-		-- Go-to definitions / references
-		map("n", "gd", vim.lsp.buf.definition, vim.tbl_extend("force", opts, { desc = "Go to definition" }))
-		map("n", "gr", vim.lsp.buf.references, vim.tbl_extend("force", opts, { desc = "Go to references" }))
-		map("n", "gi", vim.lsp.buf.implementation, vim.tbl_extend("force", opts, { desc = "Go to implementation" }))
-		map("n", "gy", vim.lsp.buf.type_definition, vim.tbl_extend("force", opts, { desc = "Go to type definition" }))
-		pcall(vim.keymap.del, "n", "<leader>D", { buffer = ev.buf }) -- duplicate of gy
+    -- Go-to definitions / references
+    map("n", "gd", vim.lsp.buf.definition, vim.tbl_extend("force", opts, { desc = "Go to definition" }))
+    map("n", "gr", vim.lsp.buf.references, vim.tbl_extend("force", opts, { desc = "Go to references" }))
+    map("n", "gi", vim.lsp.buf.implementation, vim.tbl_extend("force", opts, { desc = "Go to implementation" }))
+    map("n", "gy", vim.lsp.buf.type_definition, vim.tbl_extend("force", opts, { desc = "Go to type definition" }))
+    pcall(vim.keymap.del, "n", "<leader>D", { buffer = ev.buf }) -- duplicate of gy
 
-		-- Hover / signature
-		map("n", "K", vim.lsp.buf.hover, vim.tbl_extend("force", opts, { desc = "Hover docs" }))
-		map("n", "<leader>sh", vim.lsp.buf.signature_help, vim.tbl_extend("force", opts, { desc = "Signature help" }))
+    -- Hover / signature
+    map("n", "K", vim.lsp.buf.hover, vim.tbl_extend("force", opts, { desc = "Hover docs" }))
+    map("n", "<leader>sh", vim.lsp.buf.signature_help, vim.tbl_extend("force", opts, { desc = "Signature help" }))
 
-		-- Inlay hints (param names, inferred types, ...): both gopls and tsgo
-		-- are configured with hint settings in configs/lspconfig.lua, but that
-		-- alone doesn't display anything -- it has to be enabled client-side too.
-		local client = vim.lsp.get_client_by_id(ev.data.client_id)
-		if client and client:supports_method("textDocument/inlayHint") then
-			vim.lsp.inlay_hint.enable(inlay_hints_default(), { bufnr = ev.buf })
-		end
-		map("n", "<leader>ci", function()
-			local bufnr = ev.buf
-			local enabled = not vim.lsp.inlay_hint.is_enabled({ bufnr = bufnr })
-			vim.lsp.inlay_hint.enable(enabled, { bufnr = bufnr })
-			inlay_hints_save(enabled)
-		end, vim.tbl_extend("force", opts, { desc = "Toggle inlay hints" }))
+    -- Inlay hints (param names, inferred types, ...): both gopls and tsgo
+    -- are configured with hint settings in configs/lspconfig.lua, but that
+    -- alone doesn't display anything -- it has to be enabled client-side too.
+    local client = vim.lsp.get_client_by_id(ev.data.client_id)
+    if client and client:supports_method "textDocument/inlayHint" then
+      vim.lsp.inlay_hint.enable(inlay_hints_default(), { bufnr = ev.buf })
+    end
+    map("n", "<leader>ci", function()
+      local bufnr = ev.buf
+      local enabled = not vim.lsp.inlay_hint.is_enabled { bufnr = bufnr }
+      vim.lsp.inlay_hint.enable(enabled, { bufnr = bufnr })
+      inlay_hints_save(enabled)
+    end, vim.tbl_extend("force", opts, { desc = "Toggle inlay hints" }))
 
-		-- Diagnostics
-		map("n", "<leader>cd", vim.diagnostic.open_float, vim.tbl_extend("force", opts, { desc = "Line diagnostics" }))
-		map("n", "[d", function()
-			vim.diagnostic.jump({ count = -1, float = true })
-		end, vim.tbl_extend("force", opts, { desc = "Prev diagnostic" }))
-		map("n", "]d", function()
-			vim.diagnostic.jump({ count = 1, float = true })
-		end, vim.tbl_extend("force", opts, { desc = "Next diagnostic" }))
-		map("n", "<leader>ce", function()
-			vim.diagnostic.jump({ count = 1, severity = vim.diagnostic.severity.ERROR, float = true })
-		end, vim.tbl_extend("force", opts, { desc = "Next error" }))
+    -- Diagnostics
+    map("n", "<leader>cd", vim.diagnostic.open_float, vim.tbl_extend("force", opts, { desc = "Line diagnostics" }))
+    map("n", "[d", function()
+      vim.diagnostic.jump { count = -1, float = true }
+    end, vim.tbl_extend("force", opts, { desc = "Prev diagnostic" }))
+    map("n", "]d", function()
+      vim.diagnostic.jump { count = 1, float = true }
+    end, vim.tbl_extend("force", opts, { desc = "Next diagnostic" }))
+    map("n", "<leader>ce", function()
+      vim.diagnostic.jump { count = 1, severity = vim.diagnostic.severity.ERROR, float = true }
+    end, vim.tbl_extend("force", opts, { desc = "Next error" }))
 
-		-- Workspace folders
-		map(
-			"n",
-			"<leader>wa",
-			vim.lsp.buf.add_workspace_folder,
-			vim.tbl_extend("force", opts, { desc = "Add workspace folder" })
-		)
-		map("n", "<leader>wl", function()
-			-- No builtin telescope picker for this -- list_workspace_folders() is
-			-- just a plain string list, so a minimal pickers/finders/sorter picker
-			-- is all it needs.
-			require("telescope.pickers")
-				.new({}, {
-					prompt_title = "LSP Workspace Folders",
-					finder = require("telescope.finders").new_table({
-						results = vim.lsp.buf.list_workspace_folders(),
-					}),
-					sorter = require("telescope.config").values.generic_sorter({}),
-				})
-				:find()
-		end, vim.tbl_extend("force", opts, { desc = "List workspace folders" }))
-	end,
+    -- Workspace folders
+    map(
+      "n",
+      "<leader>wa",
+      vim.lsp.buf.add_workspace_folder,
+      vim.tbl_extend("force", opts, { desc = "Add workspace folder" })
+    )
+    map("n", "<leader>wl", function()
+      -- No builtin telescope picker for this -- list_workspace_folders() is
+      -- just a plain string list, so a minimal pickers/finders/sorter picker
+      -- is all it needs.
+      require("telescope.pickers")
+        .new({}, {
+          prompt_title = "LSP Workspace Folders",
+          finder = require("telescope.finders").new_table {
+            results = vim.lsp.buf.list_workspace_folders(),
+          },
+          sorter = require("telescope.config").values.generic_sorter {},
+        })
+        :find()
+    end, vim.tbl_extend("force", opts, { desc = "List workspace folders" }))
+  end,
 })

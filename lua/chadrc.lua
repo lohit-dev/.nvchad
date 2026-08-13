@@ -6,13 +6,13 @@
 local M = {}
 
 M.base46 = {
-	theme = "chadracula",
-	transparency = true,
+  theme = "chadracula",
+  transparency = true,
 
-	hl_override = {
-		Comment = { italic = true },
-		["@comment"] = { italic = true },
-	},
+  hl_override = {
+    Comment = { italic = true },
+    ["@comment"] = { italic = true },
+  },
 }
 
 M.nvdash = { load_on_startup = true }
@@ -28,15 +28,15 @@ M.nvdash = { load_on_startup = true }
 M.lsp = { signature = true }
 
 M.ui = {
-	statusline = {
-		theme = "default",
-		separator_style = "round",
-	},
+  statusline = {
+    theme = "default",
+    separator_style = "round",
+  },
 
-	tabufline = {
-		order = { "buffers", "tabs", "btns", "treeOffset" },
-		lazyload = false,
-	},
+  tabufline = {
+    order = { "buffers", "tabs", "btns", "treeOffset" },
+    lazyload = false,
+  },
 }
 
 return M

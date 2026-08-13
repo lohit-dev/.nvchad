@@ -1,6 +1,6 @@
 return {
-	{
-		"b0o/SchemaStore.nvim",
-		lazy = false,
-	},
+  {
+    "b0o/SchemaStore.nvim",
+    lazy = false,
+  },
 }

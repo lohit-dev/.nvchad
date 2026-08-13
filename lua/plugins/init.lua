@@ -1,3 +1,3 @@
 return {
-	{ import = "nvchad.blink.lazyspec" },
+  { import = "nvchad.blink.lazyspec" },
 }

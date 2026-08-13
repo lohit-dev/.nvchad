@@ -3,5 +3,5 @@
 -- Overriding the same plugin URL here merges with (and turns off) the base
 -- spec instead of duplicating it.
 return {
-	{ "lukas-reineke/indent-blankline.nvim", enabled = false },
+  { "lukas-reineke/indent-blankline.nvim", enabled = false },
 }
