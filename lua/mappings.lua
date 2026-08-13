@@ -67,9 +67,9 @@ map("t", "<C-[>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
 -- vim-tmux-navigator explicitly so they stay authoritative regardless of
 -- plugin load order.
 for key, dir in pairs({ h = "Left", j = "Down", k = "Up", l = "Right" }) do
-	map("n", "<C-" .. key .. ">", "<cmd><C-U>TmuxNavigate" .. dir .. "<cr>", { desc = "tmux/window " .. dir })
+	map("n", "<C-" .. key .. ">", "<cmd>TmuxNavigate" .. dir .. "<cr>", { desc = "tmux/window " .. dir })
 end
-map("n", "<C-\\>", "<cmd><C-U>TmuxNavigatePrevious<cr>", { desc = "tmux/window previous" })
+map("n", "<C-\\>", "<cmd>TmuxNavigatePrevious<cr>", { desc = "tmux/window previous" })
 
 -- Ctrl+S: terminals with flow control enabled treat this as XOFF (freeze
 -- output until <C-q>), which is very likely the actual cause of the tmux

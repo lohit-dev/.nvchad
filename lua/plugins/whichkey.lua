@@ -75,6 +75,16 @@ return {
 				{ "<leader>hp", desc = "Preview hunk" },
 				{ "<leader>hb", desc = "Blame line" },
 
+				-- Java (nvim-jdtls, java filetype only -- see ftplugin/java.lua)
+				{ "<leader>j", group = "󰬷 Java" },
+				{ "<leader>jo", desc = "Organize imports" },
+				{ "<leader>jv", desc = "Extract variable" },
+				{ "<leader>jc", desc = "Extract constant" },
+				{ "<leader>jm", desc = "Extract method" },
+				{ "<leader>jt", desc = "Test current file" },
+				{ "<leader>jr", desc = "Run current file" },
+				{ "<leader>jb", desc = "Spring Boot: run" },
+
 				-- LeetCode
 				{ "<leader>l", group = "󰡄 LeetCode" },
 
