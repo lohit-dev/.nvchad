@@ -35,7 +35,27 @@ return {
       "mfussenegger/nvim-dap",
     },
     config = function()
-      require("java").setup()
+      -- Explicit root_markers, `.git` excluded on purpose: nvim-java's
+      -- default markers include `.git`, and jdtls walks *up* from the
+      -- buffer looking for the first match. If a Java file ever gets
+      -- opened somewhere under a git-managed home directory (dotfiles
+      -- repos, a scratch file outside any real project), `.git` at $HOME
+      -- would win before it reaches an actual pom.xml/build.gradle,
+      -- attaching jdtls with the wrong project root -- which looks
+      -- exactly like "Java doesn't work" (no completions/diagnostics,
+      -- silent). Maven/Gradle markers only means jdtls only attaches
+      -- inside real Java projects.
+      require("java").setup {
+        root_markers = {
+          "pom.xml",
+          "build.gradle",
+          "build.gradle.kts",
+          "settings.gradle",
+          "settings.gradle.kts",
+          "mvnw",
+          "gradlew",
+        },
+      }
       require("lspconfig").jdtls.setup {
         capabilities = require("nvchad.configs.lspconfig").capabilities,
       }
