@@ -1,6 +1,11 @@
 vim.g.base46_cache = vim.fn.stdpath "data" .. "/base46/"
 vim.g.mapleader = " "
 
+-- Keep compatibility notices from older plugins out of the command area.
+vim.deprecate = function()
+  return nil
+end
+
 -- bootstrap lazy and all plugins
 local lazypath = vim.fn.stdpath "data" .. "/lazy/lazy.nvim"
 
