@@ -15,6 +15,9 @@ map("n", "<leader>bl", function()
   require("nvchad.tabufline").closeBufs_at_direction "left"
 end, { desc = "Close buffers left" })
 
+-- lsp
+map({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, { desc = "LSP code action" })
+
 -- windows
 map("n", "<leader>w=", "<C-w>=", { desc = "Equalize splits" })
 map("n", "<leader>wv", "<cmd>vsplit<cr>", { desc = "Split window vertically" })
