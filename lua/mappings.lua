@@ -22,7 +22,14 @@ end
 map("n", "'", open_projects, { desc = "Find projects" })
 map("n", "<leader>p", open_projects, { desc = "Find projects" })
 
-map("n", "U", "~h", { desc = "Uppercase first letter of current word" })
+map("n", "U", function()
+  local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+  local char = vim.api.nvim_buf_get_text(0, row - 1, col, row - 1, col + 1, {})[1]
+  if char and char ~= "" then
+    vim.api.nvim_buf_set_text(0, row - 1, col, row - 1, col + 1, { char:upper() })
+    vim.api.nvim_win_set_cursor(0, { row, col })
+  end
+end, { desc = "Uppercase char under cursor" })
 map("n", "<leader>u", "g~w", { desc = "Toggle case of word" })
 
 -- buffers

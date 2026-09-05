@@ -40,7 +40,18 @@ return {
         silent_chdir = true,
       }
 
-      require("telescope").load_extension "projects"
+      -- Load the extension after telescope itself is ready.
+      -- Using VimEnter ensures all plugins (including telescope) have
+      -- finished their own setup before we register the extension.
+      vim.api.nvim_create_autocmd("VimEnter", {
+        once = true,
+        callback = function()
+          local ok, telescope = pcall(require, "telescope")
+          if ok then
+            telescope.load_extension "projects"
+          end
+        end,
+      })
     end,
   },
 
