@@ -12,7 +12,7 @@ local options = {
 
   format_on_save = function(bufnr)
     -- JDTLS owns Java formatting;
-    if vim.bo[bufnr].filetype == "java" then
+    if vim.bo[bufnr].filetype == "java" or vim.bo[bufnr].filetype == "go" then
       return
     end
 
