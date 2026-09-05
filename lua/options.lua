@@ -8,7 +8,7 @@ o.cursorlineopt = "number" -- moot while cursorline is off, kept for parity with
 opt.termguicolors = true -- Enable 24-bit RGB colors in the terminal
 opt.background = "dark" -- Force dark version of colorschemes
 opt.signcolumn = "yes" -- Always show the sign column (prevents text from shifting when git signs appear)
-opt.guicursor = "a:block" -- block cursor in all modes
+opt.guicursor = ""
 opt.scrolloff = 6 -- keep 8 lines of context above/below the cursor -- matches lvim
 
 -- Wrapping & Text Formatting

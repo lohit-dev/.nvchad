@@ -65,7 +65,6 @@ map("n", "<leader>th", function()
   local enabled = not vim.lsp.inlay_hint.is_enabled()
   vim.lsp.inlay_hint.enable(enabled)
   inlay_hints_save(enabled)
-  vim.notify("Inlay hints " .. (enabled and "enabled" or "disabled"), vim.log.levels.INFO)
 end, { desc = "Toggle inlay hints" })
 
 -- NvChad theme picker (was <leader>th, moved here)
