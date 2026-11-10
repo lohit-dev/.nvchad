@@ -48,10 +48,7 @@ return {
   builder = function()
     return {
       cmd = test_cmds[vim.bo.filetype](),
-      components = {
-        { "open_output", on_start = "always", direction = "vertical", focus = true },
-        "default",
-      },
+      components = { "default" },
     }
   end,
   condition = {

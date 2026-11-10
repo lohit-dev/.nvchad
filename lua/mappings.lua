@@ -3,7 +3,6 @@ require "nvchad.mappings"
 local map = vim.keymap.set
 
 map("n", ";", ":", { desc = "CMD enter command mode" })
-map("i", "jj", "<ESC>")
 
 -- projects
 local function open_projects()
@@ -43,6 +42,19 @@ end, { desc = "Close buffers left" })
 
 -- lsp
 map({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, { desc = "LSP code action" })
+map("n", "<leader>td", function()
+  require("diagnostic_virtual_text").toggle()
+end, { desc = "Toggle diagnostic text" })
+map("n", "<leader>tn", function()
+  vim.wo.number = not vim.wo.number
+end, { desc = "Toggle line numbers" })
+
+-- Register the toggle with WhichKey explicitly so it appears in the popup.
+require("which-key").add {
+  { "<leader>t", group = "Toggle" },
+  { "<leader>td", desc = "Toggle diagnostic text" },
+  { "<leader>tn", desc = "Toggle line numbers" },
+}
 
 -- override NvChad's <leader>th (themes) → inlay hints toggle
 -- State is persisted to disk so it survives restarts.

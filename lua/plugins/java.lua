@@ -9,6 +9,11 @@ return {
       local uv = vim.uv
       local mason_dir = vim.fn.stdpath "data" .. "/mason"
       local jdtls_dir = mason_dir .. "/packages/jdtls"
+      local java_home = vim.env.JAVA_HOME
+      if not java_home or java_home == "" then
+        java_home = vim.fn.trim(vim.fn.system({ "/usr/libexec/java_home", "-v", "21" }))
+      end
+      local java = java_home ~= "" and (java_home .. "/bin/java") or "java"
       local format_group = vim.api.nvim_create_augroup("JdtlsFormat", { clear = true })
       local attach_group = vim.api.nvim_create_augroup("JdtlsAttach", { clear = true })
 
@@ -91,7 +96,7 @@ return {
 
         jdtls.start_or_attach {
           cmd = {
-            "/opt/homebrew/opt/openjdk@21/bin/java",
+            java,
             "-Declipse.application=org.eclipse.jdt.ls.core.id1",
             "-Dosgi.bundles.defaultStartLevel=4",
             "-Declipse.product=org.eclipse.jdt.ls.core.product",

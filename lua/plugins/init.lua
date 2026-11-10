@@ -12,7 +12,23 @@ return {
     opts = require "configs.conform",
   },
   {
+    "max397574/better-escape.nvim",
+    event = "InsertEnter",
+    opts = {
+      timeout = 250,
+      default_mappings = false,
+      mappings = {
+        i = {
+          j = {
+            j = "<Esc>",
+          },
+        },
+      },
+    },
+  },
+  {
     "neovim/nvim-lspconfig",
+    event = { "BufReadPre", "BufNewFile" },
     config = function()
       require "configs.lspconfig"
     end,
@@ -37,6 +53,10 @@ return {
         "rust",
         "java",
         "python",
+        "swift",
+        "toml",
+        "dockerfile",
+        "yaml",
       },
     },
   },

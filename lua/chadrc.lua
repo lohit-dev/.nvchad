@@ -6,7 +6,7 @@
 local M = {}
 
 M.base46 = {
-  theme = "aquarium",
+  theme = "aylin",
   transparency = true,
 
   hl_override = {
@@ -31,6 +31,7 @@ M.ui = {
   },
 
   tabufline = {
+    enabled = false,
     order = { "buffers", "tabs", "btns", "treeOffset" },
     lazyload = false,
   },

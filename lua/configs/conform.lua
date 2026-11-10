@@ -8,10 +8,14 @@ local options = {
     typescript = { "prettier" },
     typescriptreact = { "prettier" },
     json = { "prettier" },
+    toml = { "taplo" },
+    yaml = { "prettier" },
+    ["yaml.docker-compose"] = { "prettier" },
+    swift = { "swift" },
   },
 
   format_on_save = function(bufnr)
-    -- JDTLS owns Java formatting;
+    -- JDTLS owns Java formatting; gopls owns Go formatting.
     if vim.bo[bufnr].filetype == "java" or vim.bo[bufnr].filetype == "go" then
       return
     end

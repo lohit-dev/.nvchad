@@ -25,6 +25,9 @@ local run_cmds = {
   python = function()
     return { "python3", vim.fn.expand "%:p" }
   end,
+  swift = function()
+    return { "swift", vim.fn.expand "%:p" }
+  end,
   java = function()
     return { "java", vim.fn.expand "%:p" }
   end,
@@ -35,10 +38,7 @@ return {
   builder = function()
     return {
       cmd = run_cmds[vim.bo.filetype](),
-      components = {
-        { "open_output", on_start = "always", direction = "vertical", focus = true },
-        "default",
-      },
+      components = { "default" },
     }
   end,
   condition = {
